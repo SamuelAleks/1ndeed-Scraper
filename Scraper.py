@@ -13,7 +13,7 @@ options = Options()
 options.set_preference("browser.userAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Firefox/100.0")
 
 # Specify the path to the GeckoDriver executable
-geckodriver_path = "/SeleniumDriver/geckodriver"  # Replace with the actual path to geckodriver
+geckodriver_path = "SeleniumDriver/geckodriver"  # Replace with the actual path to geckodriver
 
 # Initialize Firefox WebDriver
 driver = webdriver.Firefox(service=Service(geckodriver_path), options=options)
