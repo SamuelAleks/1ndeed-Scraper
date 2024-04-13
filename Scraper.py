@@ -38,7 +38,7 @@ for job in data["metaData"]["mosaicProviderJobCardsModel"]["results"]:
         "displayTitle": job.get("displayTitle", ""),
         "company": job.get("company", ""),
         "truncatedCompany": job.get("truncatedCompany", ""),
-        "companyBrandingAttributes": job.get("companyBrandingAttributes", {}),
+        #"companyBrandingAttributes": job.get("companyBrandingAttributes", {}),
         "thirdPartyApplyUrl": job.get("thirdPartyApplyUrl", ""),
         "companyRating": job.get("companyRating", 0),
         "companyReviewCount": job.get("companyReviewCount", 0),
@@ -53,19 +53,19 @@ for job in data["metaData"]["mosaicProviderJobCardsModel"]["results"]:
         "extractedSalary_max": max(job.get("extractedSalary", {}).get("max", 0), 0),
         "extractedSalary_min": max(job.get("extractedSalary", {}).get("min", 0), 0),
         "extractedSalary_type": job.get("extractedSalary", {}).get("type", ""),
-        "enhancedAttributesModel": job.get("enhancedAttributesModel", {}),
-        "hiringMultipleCandidatesModel": job.get("hiringMultipleCandidatesModel", {}),
-        "jobTypes": job.get("jobTypes", []),
-        "openInterviewsInterviewsOnTheSpot": job.get("openInterviewsInterviewsOnTheSpot", False),
+        #"enhancedAttributesModel": job.get("enhancedAttributesModel", {}),
+        #"hiringMultipleCandidatesModel": job.get("hiringMultipleCandidatesModel", {}),
+        #"jobTypes": job.get("jobTypes", []),
+        #"openInterviewsInterviewsOnTheSpot": job.get("openInterviewsInterviewsOnTheSpot", False),
         "openInterviewsJob": job.get("openInterviewsJob", False),
         "openInterviewsOffersOnTheSpot": job.get("openInterviewsOffersOnTheSpot", False),
         "openInterviewsPhoneJob": job.get("openInterviewsPhoneJob", False),
         "remoteLocation": job.get("remoteLocation", False),
-        "remoteWorkModel": job.get("remoteWorkModel", {}),
-        "salarySnippet": job.get("salarySnippet", {}),
+        #"remoteWorkModel": job.get("remoteWorkModel", {}),
+        #"salarySnippet": job.get("salarySnippet", {}),
         "sourceId": job.get("sourceId", 0),
         "sponsored": job.get("sponsored", False),
-        "taxonomyAttributes": job.get("taxonomyAttributes", []),
+        #"taxonomyAttributes": job.get("taxonomyAttributes", []),
         "createDate": job.get("createDate", 0),
         "pubDate": job.get("pubDate", 0),
         "expired": job.get("expired", False),
@@ -92,6 +92,18 @@ mydb = mysql.connector.connect(
 
 # Create a cursor object
 mycursor = mydb.cursor()
+
+mycursor.execute("""
+                 DROP TABLE IF EXISTS TaxonomyAttributes;
+                 DROP TABLE IF EXISTS SalarySnippet;
+                 DROP TABLE IF EXISTS RemoteWorkModel;
+                 DROP TABLE IF EXISTS HiringMultipleCandidatesModel;
+                 DROP TABLE IF EXISTS EnhancedAttributesModel;
+                 DROP TABLE IF EXISTS CompanyBrandingAttributes;
+                 
+                 DROP TABLE IF EXISTS Jobs;
+                 
+                 """, multi=True)
 
 # Create tables if they do not exist
 mycursor.execute("""
@@ -123,10 +135,14 @@ mycursor.execute("""
         openInterviewsOffersOnTheSpot BOOLEAN,
         openInterviewsPhoneJob BOOLEAN,
         remoteLocation BOOLEAN,
-        createDate DATETIME DEFAULT CURRENT_TIMESTAMP,
-        pubDate DATETIME DEFAULT CURRENT_TIMESTAMP,
-        expired BOOLEAN DEFAULT 0
+        sourceId INT, -- Add this column
+        sponsored BOOLEAN DEFAULT FALSE,
+        createDate VARCHAR(255),
+        pubDate VARCHAR(255),
+        expired BOOLEAN DEFAULT 0,
+        searchUID VARCHAR(255)
     )
+
 """)
 
 mycursor.execute("""
@@ -202,7 +218,7 @@ for job in jobs:
 
     # Insert data into the related tables
     jobkey = job['jobkey']
-
+'''
     # CompanyBrandingAttributes
     branding_attributes = job['companyBrandingAttributes']
     if branding_attributes:
@@ -264,7 +280,7 @@ for job in jobs:
         sql_taxonomy = "INSERT INTO TaxonomyAttributes (jobkey, attributeLabel, attributeValue) VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE attributeLabel = VALUES(attributeLabel), attributeValue = VALUES(attributeValue)"
         values_taxonomy = (jobkey, attribute_label, attribute_value)
         mycursor.execute(sql_taxonomy, values_taxonomy)
-
+'''
 
 # Commit changes and close connection
 mydb.commit()
