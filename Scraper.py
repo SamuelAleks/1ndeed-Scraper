@@ -39,6 +39,8 @@ for job in data["metaData"]["mosaicProviderJobCardsModel"]["results"]:
         "company": job.get("company", ""),
         "truncatedCompany": job.get("truncatedCompany", ""),
         #"companyBrandingAttributes": job.get("companyBrandingAttributes", {}),
+        "headerImageUrl": job.get("companyBrandingAttributes.headerImageUrl", ""),
+        "logoUrl": job.get("companyBrandingAttributes.logoUrl", ""),
         "thirdPartyApplyUrl": job.get("thirdPartyApplyUrl", ""),
         "companyRating": job.get("companyRating", 0),
         "companyReviewCount": job.get("companyReviewCount", 0),
@@ -116,6 +118,8 @@ mycursor.execute("""
         displayTitle VARCHAR(255),
         company VARCHAR(255),
         truncatedCompany VARCHAR(255),
+        headerImageUrl TEXT(2500),
+        logoUrl TEXT(2500),
         thirdPartyApplyUrl TEXT(2500),
         companyRating DECIMAL(3, 1),
         companyReviewCount INT,
@@ -212,7 +216,46 @@ for job in jobs:
     columns = ', '.join(job.keys())
     placeholders = ', '.join(['%s'] * len(job))
     update_clause = ', '.join([f"{key} = VALUES({key})" for key in job.keys()])
-    sql_job = f"INSERT INTO Jobs ({columns}) VALUES ({placeholders}) ON DUPLICATE KEY UPDATE {update_clause}"
+    sql_job = f"INSERT INTO Jobs (jobkey, viewJobLink, link, normTitle, title, displayTitle, company, \
+        truncatedCompany, thirdPartyApplyUrl, companyRating, companyReviewCount, featuredEmployer, featuredEmployerCandidate, \
+                feedId, formattedActivityDate, formattedLocation, formattedRelativeTime, jobLocationState, \
+                    jobLocationCity, extractedSalary_max, extractedSalary_min, extractedSalary_type, openInterviewsJob, \
+                        openInterviewsOffersOnTheSpot, openInterviewsPhoneJob, remoteLocation, sourceId, sponsored, \
+                            createDate, pubDate, expired, searchUID) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, \
+                                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) \
+                                    ON DUPLICATE KEY UPDATE \
+                                        viewJobLink = VALUES(viewJobLink), \
+                                        link = VALUES(link), \
+                                        normTitle = VALUES(normTitle), \
+                                        title = VALUES(title), \
+                                        displayTitle = VALUES(displayTitle), \
+                                        company = VALUES(company), \
+                                        truncatedCompany = VALUES(truncatedCompany), \
+                                        thirdPartyApplyUrl = VALUES(thirdPartyApplyUrl), \
+                                        companyRating = VALUES(companyRating), \
+                                        companyReviewCount = VALUES(companyReviewCount), \
+                                        featuredEmployer = VALUES(featuredEmployer), \
+                                        featuredEmployerCandidate = VALUES(featuredEmployerCandidate), \
+                                        feedId = VALUES(feedId), \
+                                        formattedActivityDate = VALUES(formattedActivityDate), \
+                                        formattedLocation = VALUES(formattedLocation), \
+                                        formattedRelativeTime = VALUES(formattedRelativeTime), \
+                                        jobLocationState = VALUES(jobLocationState), \
+                                        jobLocationCity = VALUES(jobLocationCity), \
+                                        extractedSalary_max = VALUES(extractedSalary_max), \
+                                        extractedSalary_min = VALUES(extractedSalary_min), \
+                                        extractedSalary_type = VALUES(extractedSalary_type), \
+                                        openInterviewsJob = VALUES(openInterviewsJob), \
+                                        openInterviewsOffersOnTheSpot = VALUES(openInterviewsOffersOnTheSpot), \
+                                        openInterviewsPhoneJob = VALUES(openInterviewsPhoneJob), \
+                                        remoteLocation = VALUES(remoteLocation), \
+                                        sourceId = VALUES(sourceId), \
+                                        sponsored = VALUES(sponsored), \
+                                        createDate = VALUES(createDate), \
+                                        pubDate = VALUES(pubDate), \
+                                        expired = VALUES(expired), \
+                                        searchUID = VALUES(searchUID)"
+
     values_job = tuple(job.values())
     mycursor.execute(sql_job, values_job)
 
