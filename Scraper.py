@@ -102,7 +102,6 @@ mycursor.execute("""
                  DROP TABLE IF EXISTS HiringMultipleCandidatesModel;
                  DROP TABLE IF EXISTS EnhancedAttributesModel;
                  DROP TABLE IF EXISTS CompanyBrandingAttributes;
-                 
                  DROP TABLE IF EXISTS Jobs;
                  
                  """, multi=True)
@@ -117,38 +116,11 @@ mycursor.execute("""
         title VARCHAR(255),
         displayTitle VARCHAR(255),
         company VARCHAR(255),
-        truncatedCompany VARCHAR(255),
-        headerImageUrl TEXT(2500),
-        logoUrl TEXT(2500),
-        thirdPartyApplyUrl TEXT(2500),
-        companyRating DECIMAL(3, 1),
-        companyReviewCount INT,
-        featuredEmployer BOOLEAN,
-        featuredEmployerCandidate BOOLEAN,
-        feedId INT,
-        formattedActivityDate VARCHAR(50),
-        formattedLocation VARCHAR(255),
-        formattedRelativeTime VARCHAR(50),
-        jobLocationState VARCHAR(2),
-        jobLocationCity VARCHAR(255),
-        extractedSalary_max DECIMAL(12, 2),
-        extractedSalary_min DECIMAL(12, 2),
-        extractedSalary_type VARCHAR(50),
-        openInterviewsInterviewsOnTheSpot BOOLEAN,
-        openInterviewsJob BOOLEAN,
-        openInterviewsOffersOnTheSpot BOOLEAN,
-        openInterviewsPhoneJob BOOLEAN,
-        remoteLocation BOOLEAN,
-        sourceId INT, -- Add this column
-        sponsored BOOLEAN DEFAULT FALSE,
-        createDate VARCHAR(255),
-        pubDate VARCHAR(255),
-        expired BOOLEAN DEFAULT 0,
-        searchUID VARCHAR(255)
+        truncatedCompany VARCHAR(255)
     )
 
 """)
-
+'''
 mycursor.execute("""
     CREATE TABLE IF NOT EXISTS CompanyBrandingAttributes (
         jobkey VARCHAR(255) PRIMARY KEY,
@@ -209,6 +181,7 @@ mycursor.execute("""
         FOREIGN KEY (jobkey) REFERENCES Jobs(jobkey) ON DELETE CASCADE
     )
 """)
+'''
 
 # Insert data into the Jobs table, update if the jobkey already exists
 for job in jobs:
