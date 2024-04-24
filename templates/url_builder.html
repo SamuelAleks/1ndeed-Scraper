@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Builder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+           min-width: 100%;
+            padding: 0 20px;
+        }
+        header {
+            background-color: #007bff;
+            color: #fff;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 10px 20px;
+            border-radius: 8px;
+            
+        }
+        .title {
+            background-color: #dedede;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 2px 20px;
+            border-radius: 8px;
+        }
+        header a {
+            text-decoration: none;
+            color: #fff;
+            margin-right: 20px;
+        }
+
+        h1 {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        form {
+            background-color: #fff;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        form input[type="text"],
+        form select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        form input[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        form input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        button#reset {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button#reset:hover {
+            background-color: #c82333;
+        }
+
+        .generated-url {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #dff0d8;
+            border: 1px solid #c3e6cb;
+            border-radius: 4px;
+            text-align: center;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 2px 20px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+    <header>
+        <a href="/" style="color: white; text-decoration: none;">Visit Jobs</a>
+        
+    </header>
+    
+    <div class="title">
+    <h1>URL Builder</h1>
+    </div>
+    <form action="/url-builder" method="post">
+        <label for="query">Query:</label>
+        <input type="text" id="query" name="query" required>
+
+        <label for="location">Location:</label>
+        <input type="text" id="location" name="location">
+
+        <label for="date_posted">Date Posted:</label>
+        <select id="date_posted" name="date_posted">
+            <option value="">Any</option>
+            <option value="1">1 day</option>
+            <option value="3">3 days</option>
+            <option value="7">7 days</option>
+            <option value="14">14 days</option>
+        </select>
+
+        <label for="remote">Remote:</label>
+        <select id="remote" name="remote">
+            <option value="">Any</option>
+            <option value="remote">Remote</option>
+            <option value="hybrid">Hybrid</option>
+        </select>
+
+        <label for="salary">Salary:</label>
+        <input type="text" id="salary" name="salary">
+
+        <label for="job_type">Job Type:</label>
+        <select id="job_type" name="job_type">
+            <option value="">Any</option>
+            <option value="fulltime">Full-time</option>
+            <option value="contract">Contract</option>
+            <option value="parttime">Part-time</option>
+            <option value="internship">Internship</option>
+            <option value="temporary">Temporary</option>
+        </select>
+
+        <label for="encouraged_to_apply">Encouraged to Apply:</label>
+        <select id="encouraged_to_apply" name="encouraged_to_apply">
+            <option value="">Any</option>
+            <option value="JPSJ9">No Degree</option>
+            <option value="MUDKG">Military Encouraged</option>
+            <option value="NKKX4">Back to Work</option>
+            <option value="Q5R8A">Fair Chance</option>
+            <option value="CFNJG">No High School Or Diploma</option>
+        </select>
+
+        <label for="company">Company:</label>
+        <input type="text" id="company" name="company">
+
+        <input type="submit" value="Generate URL">
+        <button id="reset">Reset Fields</button>
+    </form>
+
+
+    
+
+    {% if url %}
+        <div class="generated-url">
+            <h2>Generated URL:</h2>
+            <p>{{ url }}</p>
+            <p>The URL has been saved to a text file.</p>
+        </div>
+    {% endif %}
+</div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.querySelector('form');
+            const fields = ['location', 'query', 'date_posted', 'remote', 'salary', 'job_type', 'encouraged_to_apply', 'company'];
+
+            // Function to retrieve saved form data
+            function retrieveFormData() {
+                const savedData = JSON.parse(localStorage.getItem('formData')) || {};
+                fields.forEach(field => {
+                    if (savedData[field]) {
+                        document.getElementById(field).value = savedData[field];
+                    }
+                });
+            }
+
+            // Function to save form data
+            function saveFormData() {
+                const formData = {};
+                fields.forEach(field => {
+                    formData[field] = document.getElementById(field).value;
+                });
+                localStorage.setItem('formData', JSON.stringify(formData));
+            }
+
+            // Event listener to save form data on input change
+            form.addEventListener('input', saveFormData);
+
+            // Event listener to retrieve saved form data on page load
+            retrieveFormData();
+
+            // Function to reset all fields
+            function resetFields() {
+                form.reset();
+                localStorage.removeItem('formData');
+            }
+
+            // Event listener for the reset button
+            document.getElementById('reset').addEventListener('click', resetFields);
+        });
+    </script>
+</body>
+</html>

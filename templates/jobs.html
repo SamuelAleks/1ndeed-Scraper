@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Job Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .container {
+            max-width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+		header {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        header a {
+            text-decoration: none;
+            color: #fff;
+            margin-right: 20px;
+        }
+        h1 {
+            color: #333;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        .z {
+            text-decoration: none;
+            color: #00112cff;max-width: 100px;
+			overflow: hidden;
+			white-space: nowrap;
+			background: white;
+			position: relative;
+		}
+
+		.b {
+			white-space: nowrap;
+		}
+
+		.z:hover,
+		.z:hover span {
+			padding: 10px 0 10px 0px;
+
+			overflow: visible;
+			z-index: 2;
+			
+		}
+		.z:hover span{
+			border: 3px solid #4f4f4f75;
+			border-radius: 4px;
+			background: #c4e4ffff;
+			z-index: 1;
+            padding: 10px;
+
+		}
+
+		.c {
+			padding-right: 0.5rem;
+			cursor: pointer; /* Add cursor pointer to indicate it's clickable */
+		}
+        .controls-container {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .controls-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 10px;
+            align-items: center;
+        }
+        .button-row {
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        label {
+            font-weight: bold;
+            color: #333;
+        }
+        input[type="range"] {
+            width: 100%;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 10px;
+            border-radius: 5px;
+            background: #d3d3d3;
+            outline: none;
+            margin: 5px 0;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #007bff;
+            cursor: pointer;
+        }
+        #intervalValueLabel {
+            color: #777;
+        }
+        .table-container {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #007bff;
+            color: #fff;
+            padding: 15px 20px;
+            border-radius: 5px;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            z-index: 9999;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="/url-builder">Generate URL</a>
+            <nav>
+                <a href="#">Account</a>
+            </nav>
+        </header>
+        <div class="controls-container">
+			<h1>Job Data</h1>
+            <div class="controls-grid">
+                <div class="button-row">
+                    <button id="pauseResumeButton" onclick="toggleFetching()">Pause</button>
+                    <button onclick="manualFetch()">Manual Fetch</button>
+					<button onclick="manualScrape()">Scrape</button>
+                </div>
+                <label for="intervalSlider">Auto Fetch Interval (seconds):</label>
+                <input type="range" id="intervalSlider" min="10" max="120" step="10" value="10" oninput="updateInterval(this.value)" />
+                <span id="intervalValueLabel">10 seconds</span>
+            </div>
+        </div>
+        <div class="table-container">
+            <table id="jobTable">
+                <thead>
+                    <tr>
+                        <th>Job Key</th>
+                        <th>Query URL</th>
+						<th>Fetched</th>
+                        <th>View Job Link</th>
+                        <th>Link</th>
+                        <th>Norm Title</th>
+                        <th>Title</th>
+                        <th>Company</th>
+                        <th>encryptedFccompanyId</th>
+                    </tr>
+                </thead>
+                <tbody id="jobData"></tbody>
+            </table>
+        </div>
+        <div class="notification" id="clipboardNotification">Copied to clipboard</div>
+    </div>
+    <script>
+			let fetchInterval;
+			// Function to save the auto-fetch interval to localStorage
+			function saveIntervalToLocalStorage(interval) {
+				localStorage.setItem("autoFetchInterval", interval);
+			}
+
+			// Function to load the auto-fetch interval from localStorage
+			function loadIntervalFromLocalStorage() {
+				const interval = localStorage.getItem("autoFetchInterval");
+				return interval ? parseInt(interval) : 10000; // Default to 10 seconds if not found
+			}
+
+			// Load auto-fetch interval from localStorage or set default
+			let autoFetchInterval = loadIntervalFromLocalStorage();
+
+			// Function to save the fetch state to localStorage
+			function saveFetchStateToLocalStorage(state) {
+				localStorage.setItem("fetchState", state);
+			}
+
+			// Function to load the fetch state from localStorage
+			function loadFetchStateFromLocalStorage() {
+				return localStorage.getItem("fetchState") === "true";
+			}
+
+			// Load fetch state from localStorage or set default
+			let isFetching = loadFetchStateFromLocalStorage();
+
+			function fetchFromServer(url) {
+				fetch(url)
+					.then((response) => response.json())
+					.then((data) => {
+						// Update the table with the fetched data
+						const tableBody = document.getElementById("jobData");
+						tableBody.innerHTML = ""; // Clear existing data
+						data.forEach((job) => {
+							const row = document.createElement("tr");
+							const columns = [
+								"jobkey",
+								"queryUrl",
+								"fetched",
+								"viewJobLink",
+								"link",
+								"normTitle",
+								"title",
+								"company",
+								"encryptedFccompanyId",
+							];
+							columns.forEach((column, index) => {
+								const cell = document.createElement("td");
+								if (
+									index === 0 ||
+									index === 1 ||
+									index === 2 ||
+									index === 3 ||
+									index === 4 ||
+									index === 5 ||
+									index === 6 ||
+									index === 7 ||
+									index === 8
+								) {
+									const span = document.createElement("span");
+									span.textContent = job[column];
+									span.classList.add("c");
+									span.addEventListener("click", () =>
+										copyToClipboard(job[column])
+									); // Add event listener to copy text to clipboard
+									cell.appendChild(span);
+									cell.classList.add("z"); // Add the "a" class to td
+								} else {
+									cell.textContent = job[column];
+								}
+								row.appendChild(cell);
+							});
+							tableBody.appendChild(row);
+						});
+					});
+			}
+        
+			function copyToClipboard(text) {
+				navigator.clipboard
+					.writeText(text)
+					.then(() => {
+						console.log("Text copied to clipboard");
+						showClipboardNotification();
+					})
+					.catch((err) => {
+						console.error("Error copying text: ", err);
+					});
+			}
+
+			function showClipboardNotification() {
+				const notification = document.getElementById(
+					"clipboardNotification"
+				);
+				notification.style.opacity = "1";
+				setTimeout(() => {
+					notification.style.opacity = "0";
+				}, 2000); // 2 seconds
+			}
+
+			function autoFetch() {
+				fetchFromServer("http://localhost:5000/fetch-data");
+			}
+
+			function manualFetch() {
+				fetchFromServer("http://localhost:5000/fetch-data");
+			}
+
+			// Function to toggle fetching state
+			function toggleFetching() {
+				isFetching = !isFetching; // Toggle the fetching state
+				saveFetchStateToLocalStorage(isFetching); // Save to localStorage
+				const button = document.getElementById("pauseResumeButton");
+				if (isFetching) {
+					fetchInterval = setInterval(autoFetch, autoFetchInterval);
+					button.textContent = "Pause";
+				} else {
+					clearInterval(fetchInterval); // Clear the fetch interval
+					button.textContent = "Resume";
+				}
+			}
+
+			function updateInterval(value) {
+				autoFetchInterval = parseInt(value) * 1000; // Convert to milliseconds
+				saveIntervalToLocalStorage(autoFetchInterval); // Save to localStorage
+				document.getElementById("intervalValueLabel").textContent =
+					value + " seconds";
+			}
+			// Function to update slider value and label on load
+			function updateSliderOnLoad() {
+				const slider = document.getElementById("intervalSlider");
+				slider.value = (autoFetchInterval / 1000).toString(); // Convert to seconds
+				document.getElementById("intervalValueLabel").textContent =
+					autoFetchInterval / 1000 + " seconds";
+			}
+			// Function to update pause/resume button state on load
+			function updateButtonStateOnLoad() {
+				const button = document.getElementById("pauseResumeButton");
+				button.textContent = isFetching ? "Pause" : "Resume";
+				if (isFetching) {
+					fetchInterval = setInterval(autoFetch, autoFetchInterval);
+				}
+			}
+
+			// Fetch data initially on page load
+			autoFetch();
+			// Start fetching data every 10 seconds
+			// Keep track of current sort direction
+			
+			function manualScrape() {
+				fetch("http://localhost:5000/scrape-data")
+					.then((response) => {
+						if (response.ok) {
+							console.log("Scraping initiated successfully.");
+						} else {
+							console.error("Error initiating scraping.");
+						}
+					})
+					.catch((error) => {
+						console.error("Error initiating scraping:", error);
+					});
+			}
+
+			// Keep track of current sort direction and active column index
+			let sortDirection = {};
+			let activeColumnIndex = null;
+
+			// Function to sort the data based on column index and direction
+			function sortData(columnIndex) {
+				const tableBody = document.getElementById("jobData");
+				const rows = Array.from(tableBody.getElementsByTagName("tr"));
+				const sortedRows = rows.slice(0).sort((a, b) => {
+					const aValue = a
+						.getElementsByTagName("td")
+						[columnIndex].textContent.trim();
+					const bValue = b
+						.getElementsByTagName("td")
+						[columnIndex].textContent.trim();
+					return aValue.localeCompare(bValue, undefined, {
+						sensitivity: "base",
+					});
+				});
+				if (sortDirection[columnIndex]) {
+					sortedRows.reverse();
+				}
+				while (tableBody.firstChild) {
+					tableBody.removeChild(tableBody.firstChild);
+				}
+				tableBody.appendChild(rows[0]); // Re-add the table header
+				sortedRows.forEach((row) => {
+					tableBody.appendChild(row);
+				});
+				sortDirection[columnIndex] = !sortDirection[columnIndex]; // Toggle sort direction
+				activeColumnIndex = columnIndex; // Set active column index
+				updateTriangleIndicator(); // Update triangle indicator
+			}
+
+			// Function to update triangle indicator based on active column
+			function updateTriangleIndicator() {
+				const headers = document.querySelectorAll("#jobTable th");
+				headers.forEach((header, index) => {
+					const triangle = header.querySelector(".triangle");
+					if (index === activeColumnIndex) {
+						triangle.style.visibility = "visible";
+						triangle.innerHTML = sortDirection[index]
+							? "&#x25BC;"
+							: "&#x25B2;"; // Update triangle direction
+					} else {
+						triangle.style.visibility = "hidden";
+					}
+				});
+			}
+
+			// Function to add click event listeners to table headers for sorting
+			function addSortListeners() {
+				const headers = document.querySelectorAll("#jobTable th");
+				headers.forEach((header, index) => {
+					header.addEventListener("click", () => {
+						sortData(index);
+					});
+					header.style.cursor = "pointer"; // Change cursor to indicate clickability
+					const triangle = document.createElement("span");
+					triangle.classList.add("triangle");
+					triangle.style.visibility = "hidden";
+					header.appendChild(triangle); // Add triangle indicator
+				});
+			}
+
+			// Call addSortListeners() on page load
+			window.addEventListener("load", addSortListeners);
+
+			window.addEventListener("load", updateSliderOnLoad);
+			window.addEventListener("load", updateButtonStateOnLoad);
+		</script>
+	</body>
+</html>

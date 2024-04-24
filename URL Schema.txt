@@ -1,0 +1,48 @@
+Initial builder url
+- indeed.com/job?{url data}
+
+Location
+- l={region}
+
+Query
+- q={query}
+
+DatePosted
+- fromage={age(int)}
+    1 = 1 day
+    3 = 3 days
+    7 = 7 days
+    14 = 14 days
+
+Remote?
+- sc=0kf%3Aattr(PAXZC)%3B (Hybrid)
+- sc=0kf%3Aattr(DSQF7)%3B (Remote)
+
+Salary
+- q=engineer+%24145%2C000
+    salary is simply added to the right of the query
+    per hour is entered as the total salary amount i.e 12.50/hr = $25000 a year
+
+Job Type
+- sc=0kf%3Ajt(fulltime)%3B (Full-time)
+- sc=0kf%3Ajt(contract)%3B
+- sc=0kf%3Ajt(parttime)%3B
+- sc=0kf%3Ajt(internship)%3B
+- sc=0kf%3Ajt(temporary)%3B
+
+Encouraged to Apply
+- sc=0kf%3Aattr(JPSJ9)%3B (No Degree)
+- sc=0kf%3Aattr(MUDKG)%3B (Military Encouraged)
+- sc=0kf%3Aattr(NKKX4)%3B (Back to Work)
+- sc=0kf%3Aattr(Q5R8A)%3B (Fair Chance)
+- sc=0kf%3Aattr(CFNJG)%3B (No High School Or Diploma)
+
+Company
+- sc=0kf%3Afcckey(2344c86c57af3e29)%3B
+- sc=0kf%3Afcckey({encryptedFccompanyId})%3B
+
+
+
+
+### Fulltime, No degree, and remote =
+### sc=0kf%3Aattr(DSQF7)attr(JPSJ9)jt(fulltime)
