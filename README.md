@@ -1,6 +1,6 @@
 # Indeed.com Scraper
 
-The program initially opens on the Job Data webpage.# Whisper Transcription Front-end
+The program initially opens on the Job Data webpage.
 
 <img title="" src="/README/first_start.png" alt="Alt text" data-align="inline" width="525">
 
@@ -16,9 +16,9 @@ When hovering over an item, and expanded view of the entire item is visible unde
 
 ---
 
-<img src="file:///home/admin/projects/active/Indeed%20Scraper/git/FlaskScraper/README/Jobs.png" title="" alt="Jobs.png" width="550">
+<img src="/README/Jobs.png" title="" alt="Jobs Page" width="550">
 
-<img src="file:///home/admin/projects/active/Indeed%20Scraper/git/FlaskScraper/README/Screenshot_20240424_121033.png" title="" alt="Screenshot_20240424_121033.png" width="545">
+<img src="/README/Hover.png" title="" alt="Hover over Table" width="550">
 
 ---
 
@@ -28,6 +28,6 @@ The Generate URL portion of the program is responsible for setting the parameter
 
 ---
 
-<img src="file:///home/admin/projects/active/Indeed%20Scraper/git/FlaskScraper/README/Screenshot_20240424_121114.png" title="" alt="Screenshot_20240424_121114.png" width="543">
+<img src="/README/Generate.png" title="" alt="Generate Jobs" width="550">
 
 ---
